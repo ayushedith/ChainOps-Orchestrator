@@ -1,0 +1,19 @@
+{
+  "name": "@leventeen3/infra",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "plan": "cdktf diff",
+    "deploy": "cdktf deploy",
+    "destroy": "cdktf destroy"
+  },
+  "dependencies": {
+    "cdktf": "^0.20.8",
+    "constructs": "^10.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  }
+}

@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL")
+}
+
+model Deployment {
+  id             String   @id @default(cuid())
+  chainId        Int
+  project        String
+  status         DeploymentStatus @default(PENDING)
+  commitHash     String
+  jobUrl         String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  executedBy     String
+  notes          String?
+}
+
+enum DeploymentStatus {
+  PENDING
+  RUNNING
+  SUCCESS
+  FAILED
+  REJECTED
+}

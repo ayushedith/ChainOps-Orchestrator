@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2023"],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+  "experimentalDecorators": true,
+  "emitDecoratorMetadata": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "baseUrl": ".",
+    "paths": {
+      "@leventeen3/core": ["packages/core/src"],
+      "@leventeen3/infra": ["packages/infra/src"]
+    }
+  }
+}
