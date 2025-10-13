@@ -1,15 +1,16 @@
-import { Logger } from '@nestjs/common';
+import { Logger as NestLogger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
-import { LoggerErrorInterceptor } from 'nestjs-pino';
+import { LoggerErrorInterceptor, Logger as PinoLogger } from 'nestjs-pino';
 import { DiscordBootstrapService } from './commands/discord.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bufferLogs: true
   });
-  app.useLogger(app.get(Logger));
+  const logger = app.get(PinoLogger);
+  app.useLogger(logger);
   app.useGlobalInterceptors(new LoggerErrorInterceptor());
 
   const config = app.get(ConfigService);
@@ -19,10 +20,11 @@ async function bootstrap() {
   const discordService = app.get(DiscordBootstrapService);
   await discordService.init();
 
-  Logger.log(`ChainOps bot listening on port ${port}`);
+  logger.log(`ChainOps bot listening on port ${port}`);
 }
 
 bootstrap().catch((error) => {
-  Logger.error('Failed to bootstrap bot', error);
+  const logger = new NestLogger('Bootstrap');
+  logger.error('Failed to bootstrap bot', error as Error);
   process.exit(1);
 });
