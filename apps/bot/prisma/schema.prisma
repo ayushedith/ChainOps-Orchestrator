@@ -7,17 +7,69 @@ datasource db {
   url      = env("POSTGRES_URL")
 }
 
+model Project {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  description String?
+  repository  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  pipelines   Pipeline[]
+  deployments Deployment[]
+}
+
+model Pipeline {
+  id            String       @id @default(cuid())
+  projectId     String
+  project       Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name          String
+  description   String?
+  chainId       Int?
+  workflowFile  String?
+  scheduleCron  String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  deployments   Deployment[]
+
+  @@index([projectId])
+}
+
 model Deployment {
-  id             String   @id @default(cuid())
-  chainId        Int
-  project        String
-  status         DeploymentStatus @default(PENDING)
-  commitHash     String
-  jobUrl         String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  executedBy     String
-  notes          String?
+  id            String            @id @default(cuid())
+  projectId     String
+  project       Project           @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  pipelineId    String?
+  pipeline      Pipeline?         @relation(fields: [pipelineId], references: [id], onDelete: SetNull)
+  status        DeploymentStatus  @default(PENDING)
+  chainId       Int?
+  commitHash    String
+  tag           String?
+  initiator     String
+  jobUrl        String?
+  metadata      Json?
+  startedAt     DateTime          @default(now())
+  completedAt   DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+  events        DeploymentEvent[]
+
+  @@index([projectId, startedAt])
+  @@index([pipelineId, startedAt])
+}
+
+model DeploymentEvent {
+  id           String                 @id @default(cuid())
+  deploymentId String
+  deployment   Deployment             @relation(fields: [deploymentId], references: [id], onDelete: Cascade)
+  level        DeploymentEventLevel   @default(INFO)
+  source       String
+  message      String
+  payload      Json?
+  occurredAt   DateTime               @default(now())
+  createdAt    DateTime               @default(now())
+
+  @@index([deploymentId, occurredAt])
 }
 
 enum DeploymentStatus {
@@ -26,4 +78,12 @@ enum DeploymentStatus {
   SUCCESS
   FAILED
   REJECTED
+  CANCELLED
+}
+
+enum DeploymentEventLevel {
+  DEBUG
+  INFO
+  WARN
+  ERROR
 }

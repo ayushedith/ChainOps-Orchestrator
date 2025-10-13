@@ -6,6 +6,8 @@ import { LoggerModule } from 'nestjs-pino';
 import { DiscordModule } from './commands/discord.module';
 import { HealthModule } from './infra/health.module';
 import configuration from './config/configuration';
+import { PrismaModule } from './prisma/prisma.module';
+import { DeploymentsModule } from './deployments/deployments.module';
 
 @Module({
   imports: [
@@ -23,12 +25,15 @@ import configuration from './config/configuration';
     }),
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env.local', '.env', '../../.env.local', '../../.env'],
       load: [configuration]
     }),
     ScheduleModule.forRoot(),
     TerminusModule,
+    PrismaModule,
     DiscordModule,
-    HealthModule
+    HealthModule,
+    DeploymentsModule
   ]
 })
 export class AppModule {}
