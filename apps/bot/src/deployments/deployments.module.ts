@@ -4,6 +4,7 @@ import { DeploymentsController } from './deployments.controller';
 
 @Module({
   providers: [DeploymentsService],
-  controllers: [DeploymentsController]
+  controllers: [DeploymentsController],
+  exports: [DeploymentsService]
 })
 export class DeploymentsModule {}
