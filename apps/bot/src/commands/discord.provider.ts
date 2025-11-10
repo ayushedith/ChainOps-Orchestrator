@@ -13,7 +13,7 @@ export const DiscordClientProvider: Provider = {
 
     const token = config.get<string>('discord.token');
     if (!token) {
-      throw new Error('Missing Discord bot token');
+      throw new Error('Missing Discord bot token, please set it in the environment variables or config file.');
     }
 
     await client.login(token);
